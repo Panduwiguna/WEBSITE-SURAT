@@ -8,7 +8,7 @@
   <meta name="description" content="Sistem cerdas berbasis Computer Vision untuk audit surat organisasi mahasiswa.">
 
   <!-- Favicon Logo -->
-  <link rel="icon" type="image/jpeg" href="./Logo.png">
+  <link rel="icon" type="image/png" href="./Logo.png">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,16 +29,9 @@
     <!-- ================= NAVBAR ================= -->
     <header class="navbar">
       <div class="brand-wrapper">
-        <div class="brand-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <path d="m9 15 2 2 4-4"></path>
-          </svg>
-        </div>
+        <img src="Logo.png" alt="DocuValid Logo" class="brand-logo">
         <div class="brand-text">
-          <h1>DOCUVALID AJA <span class="badge-pill">CAPSTONE v2.4</span></h1>
+          <h1><span class="brand-title">DOCUVALID AJA</span> <span class="badge-pill">Capstone Project</span></h1>
           <p>Dibuat oleh Kelompok 6 • Capstone CV, DL, PPL & MPTI</p>
         </div>
       </div>
@@ -50,6 +43,16 @@
           <option value="bem_fakultas">Template: BEM Fakultas Teknik</option>
           <option value="hima">Template: HIMA / HMJ Program Studi</option>
         </select>
+
+        <button id="databaseBtn" class="btn-ghost" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;"
+          title="Buka Database & Riwayat Arsip Surat (SQLite)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
+          Database Arsip (SQLite)
+        </button>
 
         <button id="capstoneInfoBtn" class="btn-ghost" title="Lihat Arsitektur, FURPS & WBS">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -318,8 +321,17 @@
         </div>
 
         <!-- Footer Actions -->
-        <div class="audit-footer">
-          <button id="exportReportBtn" class="btn-primary">
+        <div class="audit-footer" style="display:flex; gap:0.6rem;">
+          <button id="saveToDbBtn" class="btn-ghost" style="border-color: rgba(16, 185, 129, 0.4); color: #34d399;"
+            title="Simpan rekam jejak hasil audit saat ini ke Database SQLite">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Simpan ke Database
+          </button>
+          <button id="exportReportBtn" class="btn-primary" style="flex:1;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
@@ -543,6 +555,103 @@
           </svg>
           Jalankan Deteksi Kesalahan
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: DATABASE ARSIP & STATISTIK AUDIT (SQLITE) ================= -->
+  <div class="modal-overlay" id="databaseModal">
+    <div class="modal-container" style="max-width: 920px;">
+      <div class="modal-header">
+        <div>
+          <h3>Database Arsip & Rekapitulasi Validasi Surat</h3>
+          <span style="font-size:0.75rem; color:var(--text-muted);">
+            Engine: <strong>SQLite 3</strong> (<code>surat_database.db</code>) • Real-time Aggregation
+          </span>
+        </div>
+        <button class="close-btn close-modal" title="Tutup">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body" style="padding: 1.25rem 1.5rem;">
+        <!-- Live KPI Cards -->
+        <div class="db-stat-grid">
+          <div class="db-stat-card">
+            <div class="lbl">Total Diaudit</div>
+            <div class="val" id="dbStatTotal" style="color:#38bdf8;">0</div>
+          </div>
+          <div class="db-stat-card">
+            <div class="lbl">Lolos Validasi</div>
+            <div class="val" id="dbStatPass" style="color:#34d399;">0</div>
+          </div>
+          <div class="db-stat-card">
+            <div class="lbl">Perlu Revisi</div>
+            <div class="val" id="dbStatWarn" style="color:#fbbf24;">0</div>
+          </div>
+          <div class="db-stat-card">
+            <div class="lbl">Cacat / Ditolak</div>
+            <div class="val" id="dbStatFail" style="color:#f87171;">0</div>
+          </div>
+          <div class="db-stat-card">
+            <div class="lbl">Rata-rata Skor</div>
+            <div class="val" id="dbStatAvgScore" style="color:#a855f7;">0%</div>
+          </div>
+          <div class="db-stat-card">
+            <div class="lbl">Pass Rate</div>
+            <div class="val" id="dbStatPassRate" style="color:#10b981;">0%</div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="db-toolbar">
+          <input type="text" id="dbSearchInput" class="db-search-input" placeholder="Cari nomor surat, perihal, atau instansi...">
+          <select id="dbFilterStatus" class="db-filter-select">
+            <option value="ALL">Semua Status</option>
+            <option value="Lolos Validasi">Lolos Validasi</option>
+            <option value="Perlu Revisi">Perlu Revisi</option>
+            <option value="Cacat / Ditolak">Cacat / Ditolak</option>
+          </select>
+          <button id="dbRefreshBtn" class="db-action-btn" title="Muat ulang data dari database">
+            🔄 Refresh
+          </button>
+        </div>
+
+        <!-- Table of Records -->
+        <div class="db-table-wrapper">
+          <table class="db-table">
+            <thead>
+              <tr>
+                <th style="width:50px;">ID</th>
+                <th>Nomor Surat</th>
+                <th>Perihal & Instansi</th>
+                <th>Kategori Template</th>
+                <th style="text-align:center;">Skor</th>
+                <th style="text-align:center;">Status</th>
+                <th>Waktu Audit</th>
+                <th style="text-align:center; width:90px;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="dbTableBody">
+              <tr>
+                <td colspan="8" style="text-align:center; padding:1.5rem; color:var(--text-muted);">
+                  Memuat rekaman arsip dari database SQLite...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-header" style="justify-content: space-between; border-top: 1px solid var(--border-subtle); border-bottom: none;">
+        <span id="dbConnectionStatus" style="font-size:0.75rem; color:#34d399; display:flex; align-items:center; gap:0.4rem;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981;"></span>
+          Database Aktif: <code>surat_database.db</code> (SQLite 3)
+        </span>
+        <button class="btn-primary close-modal">Selesai</button>
       </div>
     </div>
   </div>

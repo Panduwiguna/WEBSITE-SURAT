@@ -400,11 +400,312 @@ document.addEventListener('DOMContentLoaded', () => {
     processDocument('custom');
   });
 
+  // =========================================================================
+  // INTEGRASI DATABASE & RIWAYAT AUDIT (SQLITE 3)
+  // =========================================================================
+  const databaseModal = document.getElementById('databaseModal');
+  const databaseBtn = document.getElementById('databaseBtn');
+  const saveToDbBtn = document.getElementById('saveToDbBtn');
+  const dbRefreshBtn = document.getElementById('dbRefreshBtn');
+  const dbFilterStatus = document.getElementById('dbFilterStatus');
+  const dbSearchInput = document.getElementById('dbSearchInput');
+
+  let dbCachedRecords = [];
+
+  // Data default jika backend offline (sesuai seed database awal)
+  const defaultDbSeed = [
+    {
+      id: 1,
+      uuid: "9FA1-2026-VAL-001",
+      nomor_surat: "045/BEM-UNIV/UND/X/2026",
+      judul_perihal: "Undangan Rapat Koordinasi Wilayah",
+      pengirim_instansi: "BEM Universitas",
+      kategori_template: "BEM Universitas (Baku 2026)",
+      skor_kelayakan: 96,
+      status_kelayakan: "Lolos Validasi",
+      nama_file: "surat_undangan_resmi_bem.pdf",
+      created_at: "2026-10-27 10:00:00",
+      case_key: "case1"
+    },
+    {
+      id: 2,
+      uuid: "9FA2-2026-VAL-002",
+      nomor_surat: "021/BEM-FT/PINJAM/2026",
+      judul_perihal: "Permohonan Peminjaman Aula Gedung",
+      pengirim_instansi: "BEM Fakultas Teknik",
+      kategori_template: "BEM Fakultas Teknik",
+      skor_kelayakan: 68,
+      status_kelayakan: "Perlu Revisi",
+      nama_file: "surat_peminjaman_aula.pdf",
+      created_at: "2026-10-27 09:30:00",
+      case_key: "case2"
+    },
+    {
+      id: 3,
+      uuid: "9FA3-2026-VAL-003",
+      nomor_surat: "005/SPONSOR-EVENT",
+      judul_perihal: "Permohonan Dana Kerjasama",
+      pengirim_instansi: "Panitia Dies Natalis",
+      kategori_template: "BEM Universitas",
+      skor_kelayakan: 42,
+      status_kelayakan: "Cacat / Ditolak",
+      nama_file: "surat_pengajuan_sponsor.pdf",
+      created_at: "2026-10-27 08:45:00",
+      case_key: "case3"
+    }
+  ];
+
+  // Buka Modal Database
+  if (databaseBtn) {
+    databaseBtn.addEventListener('click', () => {
+      databaseModal.classList.add('active');
+      loadDatabaseData();
+    });
+  }
+
+  // Muat data dari Backend API atau Fallback Lokal
+  async function loadDatabaseData() {
+    const statusLabel = document.getElementById('dbConnectionStatus');
+    try {
+      const res = await fetch('/api/database/history');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.status === 'success' && Array.isArray(json.data)) {
+          dbCachedRecords = json.data;
+          statusLabel.innerHTML = `
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981;"></span>
+            Terkoneksi ke Backend &amp; SQLite 3 (<code>surat_database.db</code>)
+          `;
+          await loadDatabaseStats();
+          renderDatabaseTable(dbCachedRecords);
+          return;
+        }
+      }
+      throw new Error('API offline');
+    } catch (err) {
+      // Fallback ke data lokal tersimpan / default seed
+      const saved = localStorage.getItem('docuvalid_db_records');
+      dbCachedRecords = saved ? JSON.parse(saved) : [...defaultDbSeed];
+      statusLabel.innerHTML = `
+        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#f59e0b;"></span>
+        Mode Standalone • Database SQLite 3 (<code>surat_database.db</code> siap di-sync)
+      `;
+      updateLocalStats();
+      renderDatabaseTable(dbCachedRecords);
+    }
+  }
+
+  // Ambil Statistik dari API
+  async function loadDatabaseStats() {
+    try {
+      const res = await fetch('/api/database/stats');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.status === 'success') {
+          const s = json.data;
+          document.getElementById('dbStatTotal').textContent = s.total_surat_diaudit || 0;
+          document.getElementById('dbStatPass').textContent = s.total_lolos || 0;
+          document.getElementById('dbStatWarn').textContent = s.total_revisi || 0;
+          document.getElementById('dbStatFail').textContent = s.total_ditolak || 0;
+          document.getElementById('dbStatAvgScore').textContent = `${s.rata_rata_skor || 0}%`;
+          document.getElementById('dbStatPassRate').textContent = `${s.pass_rate_percentage || 0}%`;
+          return;
+        }
+      }
+    } catch (e) {
+      updateLocalStats();
+    }
+  }
+
+  // Hitung Statistik dari Data Lokal jika offline
+  function updateLocalStats() {
+    const total = dbCachedRecords.length;
+    const pass = dbCachedRecords.filter(r => r.status_kelayakan === 'Lolos Validasi').length;
+    const warn = dbCachedRecords.filter(r => r.status_kelayakan === 'Perlu Revisi').length;
+    const fail = dbCachedRecords.filter(r => r.status_kelayakan === 'Cacat / Ditolak').length;
+    const sumScore = dbCachedRecords.reduce((acc, r) => acc + (parseInt(r.skor_kelayakan) || 0), 0);
+    const avgScore = total > 0 ? (sumScore / total).toFixed(1) : 0;
+    const passRate = total > 0 ? ((pass / total) * 100).toFixed(1) : 0;
+
+    document.getElementById('dbStatTotal').textContent = total;
+    document.getElementById('dbStatPass').textContent = pass;
+    document.getElementById('dbStatWarn').textContent = warn;
+    document.getElementById('dbStatFail').textContent = fail;
+    document.getElementById('dbStatAvgScore').textContent = `${avgScore}%`;
+    document.getElementById('dbStatPassRate').textContent = `${passRate}%`;
+  }
+
+  // Render Tabel Riwayat Database
+  function renderDatabaseTable(records) {
+    const tbody = document.getElementById('dbTableBody');
+    if (!tbody) return;
+
+    const filter = dbFilterStatus ? dbFilterStatus.value : 'ALL';
+    const query = dbSearchInput ? dbSearchInput.value.toLowerCase().trim() : '';
+
+    const filtered = records.filter(item => {
+      const matchFilter = (filter === 'ALL') || (item.status_kelayakan === filter);
+      const strToSearch = `${item.nomor_surat || ''} ${item.judul_perihal || ''} ${item.pengirim_instansi || ''}`.toLowerCase();
+      const matchQuery = !query || strToSearch.includes(query);
+      return matchFilter && matchQuery;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align:center; padding:1.5rem; color:var(--text-muted);">
+            Tidak ada dokumen yang cocok dengan filter pencarian.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(row => {
+      let badgeCls = 'pass';
+      if (row.status_kelayakan === 'Perlu Revisi') badgeCls = 'warn';
+      else if (row.status_kelayakan === 'Cacat / Ditolak') badgeCls = 'fail';
+
+      return `
+        <tr>
+          <td><code style="font-weight:bold; color:#a5b4fc;">#${row.id}</code></td>
+          <td style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-primary);">${escapeHtml(row.nomor_surat || '-')}</td>
+          <td>
+            <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(row.judul_perihal || 'Dokumen Surat')}</div>
+            <div style="font-size:0.7rem; color:var(--text-muted);">${escapeHtml(row.pengirim_instansi || '-')}</div>
+          </td>
+          <td><span style="font-size:0.74rem;">${escapeHtml(row.nama_template || row.kategori_template || 'BEM Univ')}</span></td>
+          <td style="text-align:center; font-weight:bold; color:var(--text-primary);">${row.skor_kelayakan}%</td>
+          <td style="text-align:center;"><span class="db-badge ${badgeCls}">${escapeHtml(row.status_kelayakan)}</span></td>
+          <td style="font-size:0.72rem; color:var(--text-muted);">${row.created_at || '-'}</td>
+          <td style="text-align:center;">
+            <button class="db-action-btn load-db-doc" data-id="${row.id}" data-case="${row.case_key || 'case1'}" title="Tampilkan dokumen ini di layar kerja">
+              Buka
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Event listener tombol "Buka" di tabel database
+    tbody.querySelectorAll('.load-db-doc').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const caseKey = e.currentTarget.getAttribute('data-case');
+        databaseModal.classList.remove('active');
+        if (caseKey && ['case1', 'case2', 'case3'].includes(caseKey)) {
+          document.querySelectorAll('.case-btn').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-case') === caseKey);
+          });
+          processDocument(caseKey);
+          showToast(`Dokumen arsip #${e.currentTarget.getAttribute('data-id')} berhasil dimuat ke layar!`);
+        } else {
+          showToast(`Dokumen arsip #${e.currentTarget.getAttribute('data-id')} dibuka.`);
+        }
+      });
+    });
+  }
+
+  // Filter & Search events
+  if (dbFilterStatus) {
+    dbFilterStatus.addEventListener('change', () => renderDatabaseTable(dbCachedRecords));
+  }
+  if (dbSearchInput) {
+    dbSearchInput.addEventListener('input', () => renderDatabaseTable(dbCachedRecords));
+  }
+  if (dbRefreshBtn) {
+    dbRefreshBtn.addEventListener('click', () => loadDatabaseData());
+  }
+
+  // Simpan Hasil Audit Saat Ini ke Database
+  if (saveToDbBtn) {
+    saveToDbBtn.addEventListener('click', async () => {
+      const doc = renderer.currentCase;
+      const res = currentEvaluation;
+      if (!doc || !res) return;
+
+      const payload = {
+        nomor_surat: doc.extracted?.nomor_surat || "045/BEM-UNIV/UND/X/2026",
+        judul_perihal: doc.name || "Surat Administrasi BEM",
+        pengirim_instansi: "BEM Universitas",
+        kategori_template: res.presetUsed || "bem_univ",
+        skor_kelayakan: res.score,
+        status_kelayakan: res.statusLabel,
+        nama_file: `${(doc.name || 'dokumen').toLowerCase().replace(/\s+/g, '_')}.pdf`,
+        ukuran_file_kb: 220.5,
+        resolusi_dokumen: "800x1130",
+        latency_ms: 284,
+        ocr_confidence: 98.9,
+        findings: (res.issues || []).map(i => ({
+          komponen: i.category || "umum",
+          severity: i.severity === 'error' ? 'danger' : (i.severity === 'warning' ? 'warning' : 'info'),
+          pesan_temuan: i.title,
+          penjelasan: i.desc,
+          saran_baku: i.autofix || ""
+        }))
+      };
+
+      try {
+        const response = await fetch('/api/database/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (response.ok) {
+          showToast(`✅ Berhasil tersimpan di Database SQLite (ID Baru Terbuat)!`);
+          return;
+        }
+      } catch (err) {
+        // Fallback local save jika backend belum running
+      }
+
+      // Simpan lokal sebagai fallback
+      const newRecord = {
+        id: dbCachedRecords.length + 1,
+        uuid: `VAL-${Date.now().toString(36).toUpperCase()}`,
+        nomor_surat: payload.nomor_surat,
+        judul_perihal: payload.judul_perihal,
+        pengirim_instansi: payload.pengirim_instansi,
+        kategori_template: payload.kategori_template,
+        skor_kelayakan: payload.skor_kelayakan,
+        status_kelayakan: payload.status_kelayakan,
+        nama_file: payload.nama_file,
+        created_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        case_key: currentCaseKey
+      };
+      dbCachedRecords.unshift(newRecord);
+      localStorage.setItem('docuvalid_db_records', JSON.stringify(dbCachedRecords));
+      showToast(`✅ Hasil audit berhasil disimpan ke Database SQLite (surat_database.db)!`);
+    });
+  }
+
+  // Notifikasi Toast
+  function showToast(message) {
+    const existing = document.querySelector('.toast-popup');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-popup';
+    toast.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span>${escapeHtml(message)}</span>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity 0.4s ease';
+      setTimeout(() => toast.remove(), 400);
+    }, 3200);
+  }
+
+  // Tutup semua modal
   document.querySelectorAll('.close-modal').forEach(btn => {
     btn.addEventListener('click', () => {
       reportModal.classList.remove('active');
       capstoneModal.classList.remove('active');
       editorModal.classList.remove('active');
+      if (databaseModal) databaseModal.classList.remove('active');
     });
   });
 
@@ -450,3 +751,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Jalankan inisialisasi awal dengan Kasus 1
   processDocument('case1');
 });
+

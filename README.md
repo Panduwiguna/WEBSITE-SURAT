@@ -42,14 +42,18 @@ Buka peramban (browser) dan akses URL:
 ```
 WEBSITE SURAT/
 ├── index.html            # Antarmuka web utama (Semantic HTML5, Accessible)
-├── server.js             # HTTP static server berbasis Node.js murni
+├── server.js             # HTTP server Node.js dengan Reverse Proxy API port 8000
+├── backend.py            # REST API FastAPI (Endpoints Scan & Database Audit)
+├── database.py           # Module Python SQLite 3 (CRUD, Aggregasi Stats & CLI)
+├── schema.sql            # Skema DDL Relasional SQLite & Seed Data Awal
+├── surat_database.db     # File Database SQLite 3 aktif
 ├── css/
-│   └── style.css         # Desain sistem Glassmorphism, CSS Variables, Split View
+│   └── style.css         # Desain sistem Glassmorphism, Split View & Modal Database
 └── js/
     ├── rules-engine.js   # Aturan validasi format, regex nomor, PUEBI & pembobotan skor
     ├── sample-letters.js # Generator Canvas 2D dokumen A4 realistis (3 skenario uji)
     ├── cv-pipeline.js    # Visualisator alur inferensi 5 tahap CV/DL & Bounding Box SVG
-    └── app.js            # Orkestrasi UI, zoom/pan viewport, auto-fix, dan ekspor laporan
+    └── app.js            # Orkestrasi UI, zoom/pan viewport, integrasi database & ekspor
 ```
 
 ---

@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 3000;
+const BACKEND_PORT = 8000;
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -19,6 +20,38 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   let parsedUrl = new URL(req.url, `http://${req.headers.host}`);
   let pathname = parsedUrl.pathname;
+
+  // 1. PROXY API ENDPOINT KE BACKEND FASTAPI (PORT 8000)
+  if (pathname.startsWith('/api/')) {
+    const proxyOptions = {
+      hostname: '127.0.0.1',
+      port: BACKEND_PORT,
+      path: req.url,
+      method: req.method,
+      headers: { ...req.headers, host: `127.0.0.1:${BACKEND_PORT}` }
+    };
+
+    const proxyReq = http.request(proxyOptions, (proxyRes) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res, { end: true });
+    });
+
+    proxyReq.on('error', (err) => {
+      res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({
+        status: 'backend_offline',
+        message: 'Backend Python (FastAPI) belum berjalan di port 8000.',
+        hint: 'Jalankan perintah: .venv/Scripts/python.exe backend.py',
+        db_file: 'surat_database.db',
+        error: err.message
+      }));
+    });
+
+    req.pipe(proxyReq, { end: true });
+    return;
+  }
+
+  // 2. STATIC FILE SERVER
   if (pathname === '/') pathname = '/index.html';
 
   const safePath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
@@ -41,5 +74,9 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`DocuValid-AI server running at http://localhost:${PORT}`);
+  console.log(`=======================================================`);
+  console.log(`DocuValid-AI Web Server berjalan di http://localhost:${PORT}`);
+  console.log(`API Proxy aktif meneruskan /api/* ke http://127.0.0.1:${BACKEND_PORT}`);
+  console.log(`Database: SQLite 3 (surat_database.db)`);
+  console.log(`=======================================================`);
 });
