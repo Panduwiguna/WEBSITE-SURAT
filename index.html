@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DOCUVALID AJA | Sistem Pengecekan Format & Struktur Surat BEM</title>
-  <meta name="description" content="Sistem cerdas berbasis Computer Vision dan Deep Learning untuk verifikasi format baku, struktur kop, nomor, dan legalitas surat organisasi mahasiswa (BEM).">
-  
-  <!-- Google Fonts: Inter, Outfit, & Fira Code -->
+  <meta name="description" content="Sistem cerdas berbasis Computer Vision untuk audit surat organisasi mahasiswa.">
+
+  <!-- Favicon Logo -->
+  <link rel="icon" type="image/jpeg" href="./Logo.png">
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
   <!-- Animated Background Mesh -->
   <div class="bg-mesh"></div>
@@ -23,7 +30,8 @@
     <header class="navbar">
       <div class="brand-wrapper">
         <div class="brand-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+            stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
             <path d="m9 15 2 2 4-4"></path>
@@ -44,17 +52,29 @@
         </select>
 
         <button id="capstoneInfoBtn" class="btn-ghost" title="Lihat Arsitektur, FURPS & WBS">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
           Info Proyek (MPTI/PPL)
         </button>
 
-        <button id="liveEditorBtn" class="btn-ghost" style="border-color:var(--border-focus); color:#a5b4fc;" title="Uji dan ketik teks surat kustom Anda sendiri">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        <button id="liveEditorBtn" class="btn-ghost" style="border-color:var(--border-focus); color:#a5b4fc;"
+          title="Uji dan ketik teks surat kustom Anda sendiri">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
           Uji Penulisan Langsung
         </button>
 
         <button id="uploadDocBtn" class="btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
           Unggah Dokumen (Foto/Scan)
         </button>
         <input type="file" id="fileInput" accept=".pdf,image/png,image/jpeg" style="display:none;">
@@ -66,19 +86,21 @@
       <div class="hero-grid">
         <div class="hero-title">
           <h2>Inspektur Otomatis Standar Administrasi Surat</h2>
-          <p>Pengecekan berbasis Deep Learning (Layout Analysis & PaddleOCR) terhadap kop surat, pola regex nomor, tanggal PUEBI, tanda tangan, dan stempel basah.</p>
+          <p>Pengecekan berbasis Deep Learning (Layout Analysis & PaddleOCR) terhadap kop surat, pola regex nomor,
+            tanggal PUEBI, tanda tangan, dan stempel basah.</p>
           <div class="furps-strip">
             <span class="furps-tag"><strong>[F]</strong> Functionality: 6 Module Aktif</span>
             <span class="furps-tag"><strong>[U]</strong> Usability: Interactive Canvas Sync</span>
             <span class="furps-tag"><strong>[R]</strong> Reliability: 98.9% OCR Conf</span>
-            <span class="furps-tag"><strong>[P]</strong> Performance: <300ms</span>
-            <span class="furps-tag"><strong>[S]</strong> Supportability: Modular Rule Engine</span>
+            <span class="furps-tag"><strong>[P]</strong> Performance: <300ms< /span>
+                <span class="furps-tag"><strong>[S]</strong> Supportability: Modular Rule Engine</span>
           </div>
         </div>
 
         <!-- Tombol Contoh Kasus Dokumen Uji Coba -->
         <div class="case-selector-bar">
-          <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Pilih Kasus Uji:</span>
+          <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Pilih
+            Kasus Uji:</span>
           <button class="case-btn case-pass active" data-case="case1" title="Surat dengan format lengkap dan baku">
             <span class="indicator"></span>
             <span>Kasus 1: Format Sempurna (96%)</span>
@@ -151,20 +173,26 @@
             <div class="view-mode-pill">
               <button class="view-mode-btn active" data-mode="normal" title="Tampilan Asli Dokumen">Asli</button>
               <button class="view-mode-btn" data-mode="grayscale" title="Filter OpenCV Grayscale">Grayscale</button>
-              <button class="view-mode-btn" data-mode="binary" title="Filter Binarization / Adaptive Threshold">Biner / Otsu</button>
-              <button class="view-mode-btn" data-mode="heatmap" title="Visualisasi Atensi Deep Learning">Heatmap</button>
+              <button class="view-mode-btn" data-mode="binary" title="Filter Binarization / Adaptive Threshold">Biner /
+                Otsu</button>
+              <button class="view-mode-btn" data-mode="heatmap"
+                title="Visualisasi Atensi Deep Learning">Heatmap</button>
             </div>
           </div>
 
           <!-- Bounding Boxes Toggle & Zoom Tools -->
           <div class="tool-group">
             <button id="toggleBoxesBtn" class="tool-btn active" title="Tampilkan / Sembunyikan Kotak Deteksi">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+              </svg>
               Bounding Box
             </button>
             <div style="width:1px; height:18px; background:var(--border-subtle); margin:0 4px;"></div>
             <button id="zoomOutBtn" class="tool-btn" title="Perkecil (-)">-</button>
-            <span id="zoomLevelLabel" style="font-size:0.72rem; color:var(--text-secondary); min-width:35px; text-align:center;">100%</span>
+            <span id="zoomLevelLabel"
+              style="font-size:0.72rem; color:var(--text-secondary); min-width:35px; text-align:center;">100%</span>
             <button id="zoomInBtn" class="tool-btn" title="Perbesar (+)">+</button>
             <button id="zoomResetBtn" class="tool-btn" title="Reset Ukuran">Reset</button>
           </div>
@@ -242,7 +270,8 @@
 
         <!-- TAB 1: ISSUES LIST -->
         <div class="tab-content" id="tabIssues">
-          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem; display:flex; justify-content:space-between;">
+          <div
+            style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem; display:flex; justify-content:space-between;">
             <span>Klik kartu masalah untuk langsung menyorot posisi dokumen:</span>
             <span>Urut berdasarkan urgensi</span>
           </div>
@@ -271,13 +300,19 @@
           <div style="font-size:0.8rem; line-height:1.6; color:var(--text-secondary);">
             <h4 style="color:var(--text-primary); margin-bottom:0.5rem;">Parameter Pemeriksaan Sistem:</h4>
             <ul style="padding-left:1.2rem; margin-bottom:1rem;">
-              <li><strong>Pola Nomor Surat:</strong> Format baku SK Rektorat [Nomor Urut]/[Kode Lembaga]/[Klasifikasi]/[Bulan Romawi]/[Tahun].</li>
-              <li><strong>Kaidah Tanggal PUEBI:</strong> Nama bulan wajib lengkap (bukan angka/singkatan), didahului nama kota pembuat surat.</li>
+              <li><strong>Pola Nomor Surat:</strong> Format baku SK Rektorat [Nomor Urut]/[Kode
+                Lembaga]/[Klasifikasi]/[Bulan Romawi]/[Tahun].</li>
+              <li><strong>Kaidah Tanggal PUEBI:</strong> Nama bulan wajib lengkap (bukan angka/singkatan), didahului
+                nama kota pembuat surat.</li>
               <li><strong>Pencegahan Pleonasme:</strong> Melarang penggunaan kata "Kepada Yth." bersamaan.</li>
-              <li><strong>Validasi Legalitas:</strong> Minimal 2 pejabat berwenang (Ketua & Sekretaris) serta wajib memuat cap stempel basah.</li>
+              <li><strong>Validasi Legalitas:</strong> Minimal 2 pejabat berwenang (Ketua & Sekretaris) serta wajib
+                memuat cap stempel basah.</li>
             </ul>
-            <div style="padding:0.75rem; background:var(--bg-surface); border-radius:var(--radius-md); border:1px solid var(--border-subtle); font-size:0.74rem;">
-              <span style="color:#a5b4fc; font-weight:600;">Catatan Supportability:</span> Modul aturan dirancang modular dan dapat disesuaikan untuk format organisasi kampus manapun tanpa perlu mengubah kode sumber inti.
+            <div
+              style="padding:0.75rem; background:var(--bg-surface); border-radius:var(--radius-md); border:1px solid var(--border-subtle); font-size:0.74rem;">
+              <span style="color:#a5b4fc; font-weight:600;">Catatan Supportability:</span> Modul aturan dirancang
+              modular dan dapat disesuaikan untuk format organisasi kampus manapun tanpa perlu mengubah kode sumber
+              inti.
             </div>
           </div>
         </div>
@@ -285,7 +320,11 @@
         <!-- Footer Actions -->
         <div class="audit-footer">
           <button id="exportReportBtn" class="btn-primary">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
             Cetak Lembar Audit Resmi
           </button>
         </div>
@@ -299,7 +338,10 @@
       <div class="modal-header">
         <h3>Lembar Hasil Audit Kelayakan Format Dokumen</h3>
         <button class="close-btn close-modal" title="Tutup">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
       <div class="modal-body">
@@ -308,7 +350,7 @@
             <h2>LEMBAR HASIL AUDIT ADMINISTRASI DOKUMEN</h2>
             <p>Sistem Pengujian Kepatuhan Tata Kelola Surat Mahasiswa Berbasis AI</p>
           </div>
-          
+
           <table style="width:100%; font-size:0.85rem; font-family:var(--font-sans); margin-bottom:1rem;">
             <tr>
               <td style="width:25%;"><strong>Nama Dokumen:</strong></td>
@@ -324,7 +366,8 @@
             </tr>
           </table>
 
-          <h4 style="font-family:var(--font-sans); font-size:0.9rem; margin-top:1.5rem; margin-bottom:0.5rem;">RINCIAN TEMUAN & REKOMENDASI PERBAIKAN:</h4>
+          <h4 style="font-family:var(--font-sans); font-size:0.9rem; margin-top:1.5rem; margin-bottom:0.5rem;">RINCIAN
+            TEMUAN & REKOMENDASI PERBAIKAN:</h4>
           <table class="report-table">
             <thead>
               <tr>
@@ -342,7 +385,9 @@
 
           <div class="report-seal">
             <div class="report-seal-qr">
-              <div style="width:45px; height:45px; background:#000; color:#fff; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:bold;">QR CERT</div>
+              <div
+                style="width:45px; height:45px; background:#000; color:#fff; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:bold;">
+                QR CERT</div>
               <div>
                 <strong>DocuValid-AI Verified</strong><br>
                 Verification Hash: #9FA1-2026-VAL
@@ -360,7 +405,11 @@
       <div class="modal-header" style="justify-content: flex-end; gap:0.75rem;">
         <button class="btn-ghost close-modal">Tutup</button>
         <button id="printReportBtn" class="btn-primary">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
           Cetak Dokumen (PDF)
         </button>
       </div>
@@ -373,25 +422,38 @@
       <div class="modal-header">
         <h3>Dokumentasi Teknis Capstone (4 Mata Kuliah)</h3>
         <button class="close-btn close-modal" title="Tutup">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
       <div class="modal-body" style="font-size:0.85rem; line-height:1.6;">
         <h4 style="color:#a5b4fc; margin-bottom:0.4rem;">1. Pemetaan 5 Atribut Kualitas Perangkat Lunak (FURPS):</h4>
         <ul style="padding-left:1.2rem; margin-bottom:1.2rem; color:var(--text-secondary);">
-          <li><strong>Functionality:</strong> Ekstraksi OCR akurat, deteksi bounding box per wilayah surat, validasi regex nomor, PUEBI, stempel, dan tanda tangan.</li>
-          <li><strong>Usability:</strong> Antarmuka Split-Screen interaktif dengan fitur sinkronisasi klik-ke-fokus (Click-to-Focus) dan rekomendasi perbaikan instan.</li>
-          <li><strong>Reliability:</strong> Robust terhadap kemiringan dokumen (deskewing) dan pencahayaan buruk dengan filter adaptive threshold.</li>
-          <li><strong>Performance:</strong> Pipeline inferensi ultra-responsif (&lt;300ms) dengan arsitektur non-blocking.</li>
-          <li><strong>Supportability:</strong> Aturan validasi tersentralisasi dalam rule engine berbasis preset JSON yang mudah diperluas tanpa modifikasi UI.</li>
+          <li><strong>Functionality:</strong> Ekstraksi OCR akurat, deteksi bounding box per wilayah surat, validasi
+            regex nomor, PUEBI, stempel, dan tanda tangan.</li>
+          <li><strong>Usability:</strong> Antarmuka Split-Screen interaktif dengan fitur sinkronisasi klik-ke-fokus
+            (Click-to-Focus) dan rekomendasi perbaikan instan.</li>
+          <li><strong>Reliability:</strong> Robust terhadap kemiringan dokumen (deskewing) dan pencahayaan buruk dengan
+            filter adaptive threshold.</li>
+          <li><strong>Performance:</strong> Pipeline inferensi ultra-responsif (&lt;300ms) dengan arsitektur
+            non-blocking.</li>
+          <li><strong>Supportability:</strong> Aturan validasi tersentralisasi dalam rule engine berbasis preset JSON
+            yang mudah diperluas tanpa modifikasi UI.</li>
         </ul>
 
         <h4 style="color:#a5b4fc; margin-bottom:0.4rem;">2. Rencana Pembagian Tugas Kelompok (WBS - MPTI):</h4>
-        <div style="background:var(--bg-surface); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:1.2rem;">
-          <p><strong>Anggota 1 (Project Manager & Integration):</strong> Manajemen Sprint, WBS, arsitektur REST API & deployment.</p>
-          <p><strong>Anggota 2 (Computer Vision & DL):</strong> Pipeline OpenCV (deskewing, filtering), training YOLOv8 DocLayNet & PaddleOCR.</p>
-          <p><strong>Anggota 3 (Frontend & Usability):</strong> Canvas 2D interactive viewer, SVG overlay bounding boxes, dan responsive design.</p>
-          <p><strong>Anggota 4 (NLP & QA/Testing):</strong> Rule engine regex, pengujian Blackbox, Unit testing, dan kuesioner evaluasi SUS.</p>
+        <div
+          style="background:var(--bg-surface); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:1.2rem;">
+          <p><strong>Anggota 1 (Project Manager & Integration):</strong> Manajemen Sprint, WBS, arsitektur REST API &
+            deployment.</p>
+          <p><strong>Anggota 2 (Computer Vision & DL):</strong> Pipeline OpenCV (deskewing, filtering), training YOLOv8
+            DocLayNet & PaddleOCR.</p>
+          <p><strong>Anggota 3 (Frontend & Usability):</strong> Canvas 2D interactive viewer, SVG overlay bounding
+            boxes, dan responsive design.</p>
+          <p><strong>Anggota 4 (NLP & QA/Testing):</strong> Rule engine regex, pengujian Blackbox, Unit testing, dan
+            kuesioner evaluasi SUS.</p>
         </div>
       </div>
       <div class="modal-header" style="justify-content: flex-end;">
@@ -406,40 +468,56 @@
       <div class="modal-header">
         <h3>Uji Penulisan & Deteksi Kesalahan Langsung</h3>
         <button class="close-btn close-modal" title="Tutup">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
       <div class="modal-body" style="font-size:0.85rem;">
         <p style="color:var(--text-secondary); margin-bottom:1rem;">
-          Ketik atau ubah teks di bawah ini untuk menguji secara langsung kemampuan sistem dalam mendeteksi kesalahan nomor, tanggal, pleonasme, dan kata tidak baku/typo (PUEBI):
+          Ketik atau ubah teks di bawah ini untuk menguji secara langsung kemampuan sistem dalam mendeteksi kesalahan
+          nomor, tanggal, pleonasme, dan kata tidak baku/typo (PUEBI):
         </p>
-        
+
         <form id="liveEditorForm">
           <div style="margin-bottom:0.75rem;">
             <label style="display:block; font-weight:600; margin-bottom:0.25rem;">Nomor Surat:</label>
-            <input type="text" id="editNomor" style="width:100%; background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-primary); padding:0.45rem; border-radius:var(--radius-sm); font-family:var(--font-mono);" value="021/BEM-FT/PINJAM/2026">
-            <span style="font-size:0.7rem; color:var(--text-muted);">Contoh kesalahan: tidak ada angka Romawi bulan</span>
+            <input type="text" id="editNomor"
+              style="width:100%; background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-primary); padding:0.45rem; border-radius:var(--radius-sm); font-family:var(--font-mono);"
+              value="021/BEM-FT/PINJAM/2026">
+            <span style="font-size:0.7rem; color:var(--text-muted);">Contoh kesalahan: tidak ada angka Romawi
+              bulan</span>
           </div>
 
           <div style="margin-bottom:0.75rem;">
             <label style="display:block; font-weight:600; margin-bottom:0.25rem;">Tanggal Surat:</label>
-            <input type="text" id="editTanggal" style="width:100%; background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-primary); padding:0.45rem; border-radius:var(--radius-sm);" value="24 Okt 2026">
-            <span style="font-size:0.7rem; color:var(--text-muted);">Contoh kesalahan: bulan disingkat ("Okt"), tanpa nama kota ("Sukabumi")</span>
+            <input type="text" id="editTanggal"
+              style="width:100%; background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-primary); padding:0.45rem; border-radius:var(--radius-sm);"
+              value="24 Okt 2026">
+            <span style="font-size:0.7rem; color:var(--text-muted);">Contoh kesalahan: bulan disingkat ("Okt"), tanpa
+              nama kota ("Sukabumi")</span>
           </div>
 
           <div style="margin-bottom:0.75rem;">
             <label style="display:block; font-weight:600; margin-bottom:0.25rem;">Tujuan Surat (Penerima):</label>
-            <input type="text" id="editTujuan" style="width:100%; background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-primary); padding:0.45rem; border-radius:var(--radius-sm);" value="Kepada Yth. Pimpinan Lembaga">
+            <input type="text" id="editTujuan"
+              style="width:100%; background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-primary); padding:0.45rem; border-radius:var(--radius-sm);"
+              value="Kepada Yth. Pimpinan Lembaga">
             <span style="font-size:0.7rem; color:var(--text-muted);">Contoh kesalahan: pleonasme 'Kepada Yth'</span>
           </div>
 
           <div style="margin-bottom:0.75rem;">
-            <label style="display:block; font-weight:600; margin-bottom:0.25rem;">Isi Surat (Uji Ejaan / Kata Tidak Baku PUEBI):</label>
-            <textarea id="editIsi" rows="3" style="width:100%; background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-primary); padding:0.45rem; border-radius:var(--radius-sm); font-family:var(--font-sans);">Melalui surat ini kami memohon ijin peminjaman aula gedung pertemuan utk kegiatan yang akan di laksanakan dgn susunan jadual terlampir.</textarea>
-            <span style="font-size:0.7rem; color:var(--text-muted);">Coba ketik kata: ijin, jadual, analisa, resiko, kwitansi, utk, dgn, di laksanakan</span>
+            <label style="display:block; font-weight:600; margin-bottom:0.25rem;">Isi Surat (Uji Ejaan / Kata Tidak Baku
+              PUEBI):</label>
+            <textarea id="editIsi" rows="3"
+              style="width:100%; background:var(--bg-surface); border:1px solid var(--border-subtle); color:var(--text-primary); padding:0.45rem; border-radius:var(--radius-sm); font-family:var(--font-sans);">Melalui surat ini kami memohon ijin peminjaman aula gedung pertemuan utk kegiatan yang akan di laksanakan dgn susunan jadual terlampir.</textarea>
+            <span style="font-size:0.7rem; color:var(--text-muted);">Coba ketik kata: ijin, jadual, analisa, resiko,
+              kwitansi, utk, dgn, di laksanakan</span>
           </div>
 
-          <div style="display:flex; gap:1.5rem; margin-top:1rem; padding:0.75rem; background:var(--bg-surface); border-radius:var(--radius-sm);">
+          <div
+            style="display:flex; gap:1.5rem; margin-top:1rem; padding:0.75rem; background:var(--bg-surface); border-radius:var(--radius-sm);">
             <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
               <input type="checkbox" id="editLogo" checked> Logo Resmi Ada
             </label>
@@ -448,7 +526,8 @@
             </label>
             <label style="display:flex; align-items:center; gap:0.4rem;">
               TTD:
-              <select id="editSigCount" style="background:var(--bg-secondary); color:#fff; border:1px solid var(--border-subtle); padding:2px 6px; border-radius:4px;">
+              <select id="editSigCount"
+                style="background:var(--bg-secondary); color:#fff; border:1px solid var(--border-subtle); padding:2px 6px; border-radius:4px;">
                 <option value="2">2 Orang (Ketua & Sekjen)</option>
                 <option value="1">1 Orang (Tidak Lengkap)</option>
               </select>
@@ -459,7 +538,9 @@
       <div class="modal-header" style="justify-content: flex-end; gap:0.75rem;">
         <button class="btn-ghost close-modal">Batal</button>
         <button id="applyLiveEditBtn" class="btn-primary">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
           Jalankan Deteksi Kesalahan
         </button>
       </div>
@@ -472,4 +553,5 @@
   <script src="js/cv-pipeline.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>
